@@ -1,0 +1,62 @@
+### Full Name
+
+Satyam Pani
+
+### Student ID / Roll Number
+
+MBA2025-102
+
+### Industry Selected
+
+Other (describe below)
+
+### Why This Industry?
+
+Industry - Railway Maintenance.  
+Streaming data analytics is particularly valuable in the Indian rail context because of the sheer scale and density of the network millions of passengers and thousands of freight trains move daily across diverse terrains. Real‑time detection of wheel or axle defects ensures immediate safety interventions, which is critical given India’s high traffic volumes and reliance on railways for both economic and social mobility. By preventing derailments and reducing unscheduled maintenance, streaming analytics directly supports safer, more reliable operations across one of the world’s busiest rail systems.
+
+### Data Sources Identified
+
+1. Trackside Accelerometers - numeric vibration time‑series, ~5–20 kHz sampling per sensor, several MB per train pass
+2. Trackside Acoustic Sensors - audio waveform streams, ~44.1 kHz sampling, tens of MB per train pass
+3. Train ID Readers (RFID/ANPR) - metadata events (train ID, timestamp, direction), ~1 event per train pass
+4. Onboard Telemetry (when available) - speed, axle load, bearing temperature, GPS, ~10–50 events/min per train
+5. Dispatch/Maintenance Logs - operational metadata (maintenance schedules, incident reports), ~hundreds of records/day across network
+
+### Data Pipeline Design
+
+**Source**: Trackside Accelerometers & Acoustic Sensors → Producer: edge_capture_gateway.py → Topic: trackside.vibration.raw
+Consumer 1: flink_fft_processor.py → performs short‑window FFT per train pass
+Consumer 2: storage_consumer.py → archives raw vibration streams for offline analysis
+Output: anomaly features stream / long‑term storage
+
+**Source**: Train ID Readers (RFID/ANPR) → Producer: id_reader_producer.py → Topic: train.metadata
+Consumer 1: enrichment_service.py → enriches vibration events with train ID and speed
+Consumer 2: flink_fft_processor.py → joins metadata with vibration windows
+Output: enriched event stream
+
+**Source**: Flink FFT Processor → Producer: fft_producer.py → Topic: vibration.fft.windows
+Consumer 1: anomaly_scorer.py → calculates defect severity scores
+Consumer 2: storage_consumer.py → stores FFT features for analytics
+Output: anomaly scores stream
+
+**Source:** Anomaly Scorer → Producer: anomaly_producer.py → Topic: anomaly.scores
+Consumer 1: alert_service.py → triggers alerts if severity exceeds threshold
+Consumer 2: maintenance_scheduler.py → logs flagged events for scheduling
+Output: alerts and maintenance events
+
+**Source:** Alert Service → Producer: alert_producer.py → Topic: alerts.defects
+Consumer 1: dispatch_console.py → displays alerts to rail operations
+Consumer 2: signaling_interface.py → issues automated speed restriction commands
+Output: real‑time safety actions
+
+### Business Decision Enabled
+
+One business decision a rail operations manager in India could make in real time with this pipeline is to immediately impose speed restrictions or reroute a train showing severe wheel or axle defects as it passes a monitoring checkpoint. Unlike daily batch reports, which only highlight issues after journeys are completed, streaming analytics provides instant alerts that allow managers to act within seconds. This capability is crucial in India’s high‑density rail network, where millions of passengers and freight loads depend on safe, uninterrupted service. By acting on real‑time defect scores, managers can prevent derailments, reduce costly emergency repairs, and maintain schedule reliability. Such proactive decisions not only enhance passenger safety but also protect the economic lifeline of the country’s rail system, something batch processing simply cannot achieve.
+
+### Submission Checklist
+
+- [x] I have identified at least 3 data sources with justification
+- [x] I have described my pipeline end-to-end (producer → topic → consumer → output)
+- [x] I have written the business decision rationale
+- [x] I have read and followed academic honesty guidelines
