@@ -348,6 +348,7 @@ Fallback if the course stack is down: `docker compose up -d` (MySQL :3306, Kafka
 │   └── dashboards/railway-safety.json        # 8-panel dashboard definition
 ├── docs/
 │   ├── PROJECT_REPORT.md            # This report (same content)
+│   ├── dashboard-queries.sql        # All 8 graph queries + dropdown query, runnable
 │   └── assets/
 │       ├── architecture.svg         # System architecture diagram
 │       ├── dataflow.svg             # Streaming data-flow diagram
