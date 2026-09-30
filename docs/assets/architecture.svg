@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" font-family="Segoe UI, Arial, sans-serif">
+  <rect x="0" y="0" width="1200" height="560" fill="#ffffff"/>
+  <text x="600" y="34" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">Railway Safety System — Architecture</text>
+  <text x="600" y="58" text-anchor="middle" font-size="14" fill="#555">Trackside vibration monitoring: edge capture &#8594; streaming &#8594; storage &#8594; live operations dashboard</text>
+
+  <defs>
+    <marker id="a2" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1f6feb"/>
+    </marker>
+  </defs>
+
+  <!-- Layer 1: sources -->
+  <rect x="20" y="90" width="1160" height="110" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="12"/>
+  <text x="40" y="114" font-size="14" font-weight="bold" fill="#1f6feb">LAYER 1 · TRACKSIDE SOURCES (synthetic stand-ins)</text>
+  <rect x="40" y="126" width="250" height="58" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="165" y="149" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">Accelerometers</text>
+  <text x="165" y="169" text-anchor="middle" font-size="12" fill="#8b949e">accel x/y/z mean·std·max·rms</text>
+  <rect x="310" y="126" width="250" height="58" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="435" y="149" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">Train telemetry</text>
+  <text x="435" y="169" text-anchor="middle" font-size="12" fill="#8b949e">train_id · type · speed · direction</text>
+  <rect x="580" y="126" width="250" height="58" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="705" y="149" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">Environment</text>
+  <text x="705" y="169" text-anchor="middle" font-size="12" fill="#8b949e">temp · humidity · weather · signal</text>
+  <rect x="850" y="126" width="310" height="58" fill="#0d1117" stroke="#9e6a03" stroke-width="2" rx="10"/>
+  <text x="1005" y="149" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">Defect labels</text>
+  <text x="1005" y="169" text-anchor="middle" font-size="12" fill="#8b949e">flag · type · severity 0&#8211;1</text>
+
+  <!-- Layer 2: streaming -->
+  <rect x="20" y="220" width="1160" height="110" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="12"/>
+  <text x="40" y="244" font-size="14" font-weight="bold" fill="#1f6feb">LAYER 2 · STREAMING (Apache Kafka · kafka-python)</text>
+  <rect x="40" y="256" width="340" height="58" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="210" y="279" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">producer.py · edge gateway</text>
+  <text x="210" y="299" text-anchor="middle" font-size="12" fill="#8b949e">10 rec/s · gzip · acks=all</text>
+  <rect x="430" y="256" width="340" height="58" fill="#161b22" stroke="#9e6a03" stroke-width="2" rx="10"/>
+  <text x="600" y="279" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">topic trackside.vibration.raw</text>
+  <text x="600" y="299" text-anchor="middle" font-size="12" fill="#8b949e">localhost:9092 · durable log</text>
+  <rect x="820" y="256" width="340" height="58" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="990" y="279" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">consumer.py · batch writer</text>
+  <text x="990" y="299" text-anchor="middle" font-size="12" fill="#8b949e">batch 50 · flush 5 s · flatten</text>
+
+  <!-- Layer 3: storage + serving -->
+  <rect x="20" y="350" width="1160" height="120" fill="#f6f8fa" stroke="#d0d7de" stroke-width="1.5" rx="12"/>
+  <text x="40" y="374" font-size="14" font-weight="bold" fill="#1f6feb">LAYER 3 · STORAGE + SERVING</text>
+  <rect x="40" y="386" width="540" height="68" fill="#161b22" stroke="#9e6a03" stroke-width="2" rx="10"/>
+  <text x="310" y="411" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">MySQL 8 · railway_safety.vibration_records</text>
+  <text x="310" y="433" text-anchor="middle" font-size="12" fill="#8b949e">localhost:3306 · indexed: timestamp · flag · type · train · weather</text>
+  <rect x="620" y="386" width="540" height="68" fill="#0d1117" stroke="#1f6feb" stroke-width="2" rx="10"/>
+  <text x="890" y="411" text-anchor="middle" font-size="14" font-weight="bold" fill="#e6edf3">Grafana · :3001 · 8 panels · 5 s refresh</text>
+  <text x="890" y="433" text-anchor="middle" font-size="12" fill="#8b949e">uid railway-safety · stats · rate · bars · gauge · heatmap</text>
+
+  <!-- Vertical connectors -->
+  <line x1="600" y1="200" x2="600" y2="218" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#a2)"/>
+  <line x1="600" y1="330" x2="600" y2="348" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#a2)"/>
+
+  <!-- Actors -->
+  <text x="600" y="508" text-anchor="middle" font-size="14" fill="#111">Actors: <tspan font-weight="bold">Duty / operations manager</tspan> watches the dashboard &#8594; orders speed restriction · reroute · wheelset inspection within seconds of a train pass</text>
+  <text x="600" y="532" text-anchor="middle" font-size="13" fill="#555">Infra: SDA course stack (sda-kafka-1 · sda-mysql-1 · sda-grafana-1) · docker-compose.yml is the self-contained fallback</text>
+</svg>

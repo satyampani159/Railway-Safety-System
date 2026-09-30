@@ -4,7 +4,7 @@ import urllib.error
 import json
 import base64
 
-BASE = "http://localhost:3000"
+BASE = "http://localhost:3001"
 AUTH = "Basic " + base64.b64encode(b"admin:admin").decode()
 
 
@@ -29,7 +29,7 @@ ds = {
     "uid": "mysql-railway",
     "type": "mysql",
     "access": "proxy",
-    "url": "localhost:3306",
+    "url": "host.docker.internal:3306",
     "user": "root",
     "isDefault": True,
     "editable": True,

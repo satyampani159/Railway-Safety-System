@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="420" font-family="Segoe UI, Arial, sans-serif">
+  <defs>
+    <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6 Z" fill="#1f6feb"/>
+    </marker>
+    <style>
+      .box { fill:#0d1117; stroke:#1f6feb; stroke-width:2; rx:12; }
+      .store { fill:#161b22; stroke:#9e6a03; stroke-width:2; }
+      .title { fill:#e6edf3; font-size:17px; font-weight:bold; }
+      .sub { fill:#8b949e; font-size:13px; }
+      .lbl { fill:#1f6feb; font-size:13px; font-weight:bold; }
+      .bg { fill:#ffffff; }
+    </style>
+  </defs>
+  <rect x="0" y="0" width="1200" height="420" fill="#ffffff"/>
+
+  <!-- Title -->
+  <text x="600" y="34" text-anchor="middle" font-size="22" font-weight="bold" fill="#111">Railway Safety — Streaming Data Flow</text>
+  <text x="600" y="58" text-anchor="middle" font-size="14" fill="#555">Synthetic vibration data &#8594; Kafka &#8594; MySQL &#8594; Grafana (live, 5s refresh)</text>
+
+  <!-- Nodes -->
+  <g>
+    <rect class="box" x="20" y="120" width="180" height="150"/>
+    <text class="title" x="110" y="152" text-anchor="middle">1. Generator</text>
+    <text class="sub" x="110" y="176" text-anchor="middle">generate_</text>
+    <text class="sub" x="110" y="194" text-anchor="middle">vibration_data.py</text>
+    <text class="sub" x="110" y="218" text-anchor="middle">5000 rows, 0.5 s apart</text>
+    <text class="sub" x="110" y="236" text-anchor="middle">Jan 2024, seed 42</text>
+    <text class="sub" x="110" y="254" text-anchor="middle">CSV + JSON</text>
+  </g>
+  <g>
+    <rect class="box" x="250" y="120" width="180" height="150"/>
+    <text class="title" x="340" y="152" text-anchor="middle">2. Producer</text>
+    <text class="sub" x="340" y="176" text-anchor="middle">producer.py</text>
+    <text class="sub" x="340" y="200" text-anchor="middle">CSV &#8594; JSON msgs</text>
+    <text class="sub" x="340" y="218" text-anchor="middle">10 records / sec</text>
+    <text class="sub" x="340" y="236" text-anchor="middle">acks=all, gzip</text>
+    <text class="sub" x="340" y="254" text-anchor="middle">key = train_id</text>
+  </g>
+  <g>
+    <rect class="store" x="480" y="120" width="180" height="150"/>
+    <text class="title" x="570" y="152" text-anchor="middle">3. Kafka</text>
+    <text class="sub" x="570" y="176" text-anchor="middle">localhost:9092</text>
+    <text class="sub" x="570" y="200" text-anchor="middle">topic:</text>
+    <text class="sub" x="570" y="218" text-anchor="middle">trackside.</text>
+    <text class="sub" x="570" y="236" text-anchor="middle">vibration.raw</text>
+    <text class="sub" x="570" y="254" text-anchor="middle">durable log</text>
+  </g>
+  <g>
+    <rect class="box" x="710" y="120" width="180" height="150"/>
+    <text class="title" x="800" y="152" text-anchor="middle">4. Consumer</text>
+    <text class="sub" x="800" y="176" text-anchor="middle">consumer.py</text>
+    <text class="sub" x="800" y="200" text-anchor="middle">flatten nested JSON</text>
+    <text class="sub" x="800" y="218" text-anchor="middle">batch 50 / flush 5 s</text>
+    <text class="sub" x="800" y="236" text-anchor="middle">group: railway-safety</text>
+    <text class="sub" x="800" y="254" text-anchor="middle">-consumer</text>
+  </g>
+  <g>
+    <rect class="store" x="940" y="100" width="240" height="190"/>
+    <text class="title" x="1060" y="130" text-anchor="middle">5. MySQL + Grafana</text>
+    <text class="sub" x="1060" y="154" text-anchor="middle">MySQL :3306</text>
+    <text class="sub" x="1060" y="172" text-anchor="middle">railway_safety.</text>
+    <text class="sub" x="1060" y="190" text-anchor="middle">vibration_records</text>
+    <text class="sub" x="1060" y="214" text-anchor="middle">Grafana :3001</text>
+    <text class="sub" x="1060" y="232" text-anchor="middle">8 panels, 5 s refresh</text>
+    <text class="sub" x="1060" y="250" text-anchor="middle">window 05:30&#8211;05:45 IST</text>
+    <text class="sub" x="1060" y="268" text-anchor="middle">uid: railway-safety</text>
+  </g>
+
+  <!-- Arrows -->
+  <line x1="200" y1="195" x2="246" y2="195" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text class="lbl" x="223" y="185" text-anchor="middle">CSV</text>
+  <line x1="430" y1="195" x2="476" y2="195" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text class="lbl" x="453" y="185" text-anchor="middle">JSON</text>
+  <line x1="660" y1="195" x2="706" y2="195" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text class="lbl" x="683" y="185" text-anchor="middle">poll</text>
+  <line x1="890" y1="195" x2="936" y2="195" stroke="#1f6feb" stroke-width="2.5" marker-end="url(#arr)"/>
+  <text class="lbl" x="913" y="185" text-anchor="middle">SQL</text>
+
+  <!-- Footer -->
+  <text x="600" y="330" text-anchor="middle" font-size="14" fill="#111">One record every 0.5 s of synthetic time &#183; ~15% carry a wheel defect (Flat / Spall / Crack / Corrosion / Shelling)</text>
+  <text x="600" y="356" text-anchor="middle" font-size="14" fill="#111">Consumer batch-inserts 50 rows at a time &#183; Grafana re-queries MySQL every 5 seconds</text>
+  <text x="600" y="392" text-anchor="middle" font-size="13" fill="#555">Setup once: init.sql &#183; python setup_grafana.py &#183; run consumer, then producer &#183; open http://localhost:3001/d/railway-safety</text>
+</svg>

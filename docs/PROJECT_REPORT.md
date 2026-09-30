@@ -55,7 +55,7 @@ The duty manager watches defect rate, severity, defect-type and fleet breakdowns
 
 Three layers — sources, streaming, storage + serving — all running on the standard SDA course Docker stack, calibrated to **`localhost:3001`** (Grafana), **`localhost:9092`** (Kafka), **`localhost:3306`** (MySQL).
 
-![System architecture](docs/assets/architecture.svg)
+![System architecture](assets/architecture.svg)
 
 ### 3.1 Technology stack
 
@@ -83,7 +83,7 @@ Three layers — sources, streaming, storage + serving — all running on the st
 
 ## 4. Data Flow
 
-![Streaming data flow](docs/assets/dataflow.svg)
+![Streaming data flow](assets/dataflow.svg)
 
 1. **Generate** — `generate_vibration_data.py` emits 5,000 rows starting `2024-01-01 00:00:00 UTC`, one every 0.5 s (≈42 min of synthetic traffic), ~15% carrying a defect label. Output: `trackside_vibration_raw.csv` + `.json` (git-ignored; regenerate any time).
 2. **Produce** — `producer.py` (edge gateway) reads the CSV, nests each row back into JSON (`acceleration`, `vibration_features`, `environment`, `defect` blocks, keyed by train ID) and publishes at 10 records/sec with `acks=all`, gzip compression and 3 retries.
@@ -173,13 +173,13 @@ Get-Content init.sql | docker exec -i sda-mysql-1 mysql -uroot -proot
 
 Cards show live cumulative waves behind centered numbers (no "value" caption); the defect-rate line runs 05:30–05:39 in 1-minute gaps; type bars ramp green→red (Corrosion 37 · Flat 32 · Spall 31 · Crack 26 · Shelling 24).
 
-![Dashboard top half](docs/assets/dashboard-top.png)
+![Dashboard top half](assets/dashboard-top.png)
 
 ### 9.2 Bottom — RMS bands, train type, severity heatmap
 
 Grouped green/red bars per speed band (defective vibrates harder in every band); fleet gauge (Freight 28 · Metro 28 · Passenger 26 · DMU 24 · HighSpeed 23 · EMU 21); severity heatmap across 05:30–05:45, filterable by defect type.
 
-![Dashboard bottom half](docs/assets/dashboard-bottom.png)
+![Dashboard bottom half](assets/dashboard-bottom.png)
 
 ---
 
