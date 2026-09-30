@@ -15,8 +15,8 @@ env/
 .env
 
 # Generated data files (regenerate with generate_vibration_data.py)
+trackside_vibration_raw.csv
 trackside_vibration_raw.json
-SDA.txt
 
 # IDE / Editor
 .vscode/
